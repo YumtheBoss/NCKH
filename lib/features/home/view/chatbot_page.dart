@@ -587,7 +587,7 @@ class ChatScreen extends HookConsumerWidget {
 
                   messages.value = [
                     ...messages.value,
-                    {'sender': 'user', 'message': inputText},
+                    {'sender': 'user', 'message': 'CCCD: $cccd'},
                   ];
 
                   textController.clear();
