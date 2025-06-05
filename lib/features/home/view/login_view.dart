@@ -15,6 +15,7 @@ class LoginView extends HookConsumerWidget {
     final passwordController = useTextEditingController();
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.blue[900],
@@ -23,147 +24,158 @@ class LoginView extends HookConsumerWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: [
-              const SizedBox(height: 80),
-              Image.asset('assets/images/humg_logo.webp', height: 200),
-
-              const SizedBox(height: 20),
-
-              // Tiêu đề
-              RichText(
-                text: const TextSpan(
-                  text: "HUMG ",
-                  style: TextStyle(
-                    fontSize: 60,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: "eUni",
-                      style: TextStyle(
-                        color: Colors.lightBlue,
-                        fontWeight: FontWeight.w600,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            reverse: true,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 60),
+                      Image.asset('assets/images/humg_logo.webp', height: 200),
+                      const SizedBox(height: 20),
+                      RichText(
+                        text: const TextSpan(
+                          text: "HUMG ",
+                          style: TextStyle(
+                            fontSize: 60,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueAccent,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: "eUni",
+                              style: TextStyle(
+                                color: Colors.lightBlue,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
+                      const SizedBox(height: 30),
+                      TextField(
+                        controller: usernameController,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.person),
+                          labelText: "Mã người dùng",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      TextField(
+                        controller: passwordController,
+                        obscureText: !passwordVisible.value,
+                        maxLength: 10,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.lock),
+                          labelText: "Mật khẩu",
+                          counterText: "",
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              passwordVisible.value
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              passwordVisible.value = !passwordVisible.value;
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            // Logic quên mật khẩu nếu có
+                          },
+                          child: const Text(
+                            "Quên mật khẩu",
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
 
-              const SizedBox(height: 30),
+                      const Spacer(),
 
-              // Ô nhập mã người dùng
-              TextField(
-                controller: usernameController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.person),
-                  labelText: "Mã người dùng",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () {
+                            final username = usernameController.text.trim();
+                            final password = passwordController.text;
+
+                            if (username.isEmpty || password.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Vui lòng nhập đầy đủ mã người dùng và mật khẩu"),
+                                ),
+                              );
+                              return;
+                            }
+
+                            if (!username.startsWith('2')) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Mã người dùng không tồn tại"),
+                                ),
+                              );
+                              return;
+                            }
+
+                            ref.read(isLoginProvider.notifier).login(
+                              id: username,
+                              name: 'Người dùng',
+                            );
+
+                            Navigator.popUntil(context, ModalRoute.withName(Routes.home));
+                            Navigator.pushReplacementNamed(context, Routes.home);
+                          },
+                          child: const Text(
+                            "Đăng nhập",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        "Phiên bản: 1.0.0",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
                   ),
                 ),
               ),
-
-              const SizedBox(height: 15),
-
-              // Ô nhập mật khẩu
-              TextField(
-                controller: passwordController,
-                obscureText: !passwordVisible.value,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.lock),
-                  labelText: "Mật khẩu",
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      passwordVisible.value
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      passwordVisible.value = !passwordVisible.value;
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              // Quên mật khẩu
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    // Thêm logic xử lý quên mật khẩu
-                  },
-                  child: const Text(
-                    "Quên mật khẩu",
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              // Nút đăng nhập
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () {
-                    if (usernameController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-  ref.read(isLoginProvider.notifier).login(
-    id: usernameController.text.trim(),
-    name: 'Người dùng', // nếu có thêm field "Họ tên" thì lấy ở đây
-  );
-  Navigator.popUntil(context, ModalRoute.withName(Routes.home));
-  Navigator.pushReplacementNamed(context, Routes.home);
-} else {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-      content: Text("Vui lòng nhập đầy đủ mã người dùng và mật khẩu"),
-    ),
-  );
-}
-
-                  },
-                  child: const Text(
-                    "Đăng nhập",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Phiên bản
-              const Text(
-                "Phiên bản: 1.0.0",
-                style: TextStyle(color: Colors.grey),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

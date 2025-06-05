@@ -6,6 +6,7 @@ import 'package:humg_ai_chat_app/features/home/provider/chatbot/get_history_conv
 import 'package:humg_ai_chat_app/features/home/provider/chatbot/get_reply_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../provider/check_login_provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ChatScreen extends HookConsumerWidget {
   const ChatScreen({super.key});
@@ -32,7 +33,12 @@ class ChatScreen extends HookConsumerWidget {
     final isLoadingReply = ref.watch(getReplyProvider).isLoading;
     final isLoadingOldChat = ref.watch(getHistoryConvProvider).isLoading;
     final historyChatList = ref.watch(getConvTitleProvider).data;
-    final termsList = ref.watch(getReplyProvider).terms;
+    final fixedTerms = [
+      "Điểm ngành công nghệ thông tin là bao nhiêu",
+      "Điểm xét tuyển học bạ ngành kỹ thuật dầu khí",
+      "Phương thức tuyển sinh của trường",
+      "Hãy tra cứu điểm giúp tôi"
+];
 
     final scrollController = useState(ScrollController());
 
@@ -230,8 +236,7 @@ class ChatScreen extends HookConsumerWidget {
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 20),
-                                for (var i = 0; i < (termsList.terms ?? []).length; i++)
-                                  buildSampleQuestion(termsList.terms![i]),
+                                for (var term in fixedTerms) buildSampleQuestion(term),
                               ],
                             ),
                           ),
@@ -268,14 +273,10 @@ class ChatScreen extends HookConsumerWidget {
                                   color: Colors.grey[300],
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: const Text(
-                                  "Đang xử lý...",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15.0,
-                                    fontStyle: FontStyle.italic,
+                                child: const SpinKitThreeBounce(
+                                  color: Colors.black,
+                                  size: 20.0,
                                   ),
-                                ),
                               ),
                             ],
                           );

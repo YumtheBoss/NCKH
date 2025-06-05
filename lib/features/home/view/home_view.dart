@@ -264,14 +264,14 @@ class HomeViewState extends ConsumerState<HomeView> {
           Navigator.pushNamed(context, Routes.chatbot);
         }},
 
-        {
-          'icon' : Icons.dashboard,
-          'color' : Colors.blue,
-          'label': 'Dashboard',
-          'onTap' : () {
-            Navigator.pushNamed(context, Routes.dashboard);
-          }
-        },
+        // {
+        //   'icon' : Icons.dashboard,
+        //   'color' : Colors.blue,
+        //   'label': 'Dashboard',
+        //   'onTap' : () {
+        //     Navigator.pushNamed(context, Routes.dashboard);
+        //   }
+        // },
       ];
 
       return Padding(

@@ -11,6 +11,6 @@ class AppRoutes {
     Routes.home: (context) => HomePage(),
     Routes.login: (context) => LoginView(),
     Routes.chatbot: (context) => ChatScreen(),
-    Routes.dashboard: (context) => DashboardView(),
+   
   };
 }
